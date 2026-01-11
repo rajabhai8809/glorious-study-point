@@ -47,9 +47,10 @@ app.use('/api/notes', noteRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 
 // Serve static files from the project root (../../ goes up from src -> backend -> root)
-app.use(express.static(path.join(__dirname, '../../'), {
-    maxAge: '0', // Disable cache for development so changes appear immediately
-    etag: false
-}));
+const cacheOptions = process.env.NODE_ENV === 'production' 
+    ? { maxAge: '1h', etag: true } 
+    : { maxAge: '0', etag: false };
+
+app.use(express.static(path.join(__dirname, '../../'), cacheOptions));
 
 module.exports = app;
