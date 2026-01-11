@@ -23,7 +23,7 @@ async function loadDashboardData() {
     if (!token) window.location.href = 'login.html';
 
     try {
-        const response = await fetch('http://localhost:5000/api/users/dashboard', {
+        const response = await fetch('/api/users/dashboard', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -181,7 +181,7 @@ async function loadNotifications() {
     const list = document.getElementById('notification-list');
 
     try {
-        const response = await fetch('http://localhost:5000/api/users/notifications', {
+        const response = await fetch('/api/users/notifications', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -222,7 +222,7 @@ async function loadNotifications() {
 window.deleteNotification = async function(id) {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`http://localhost:5000/api/users/notifications/${id}`, {
+        const response = await fetch(`/api/users/notifications/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -237,7 +237,7 @@ window.deleteNotification = async function(id) {
 window.markAllRead = async function() {
     const token = localStorage.getItem('token');
     try {
-        await fetch('http://localhost:5000/api/users/notifications/read', {
+        await fetch('/api/users/notifications/read', {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -252,7 +252,7 @@ window.clearAllNotifications = async function() {
     showConfirm('Are you sure you want to clear all notifications?', async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch('http://localhost:5000/api/users/notifications', {
+            const response = await fetch('/api/users/notifications', {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -280,7 +280,7 @@ window.toggleNotifications = async function() {
         
         if (!badge.classList.contains('hidden')) {
             try {
-                await fetch('http://localhost:5000/api/users/notifications/read', {
+                await fetch('/api/users/notifications/read', {
                     method: 'PUT',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });

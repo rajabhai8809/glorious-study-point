@@ -99,7 +99,7 @@ async function loadDashboardStats() {
     }
 
     try {
-        const response = await fetch('http://localhost:5000/api/admin/dashboard', {
+        const response = await fetch('/api/admin/dashboard', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -191,7 +191,7 @@ async function loadExamsForDropdown() {
     if (!select) return;
     
     try {
-        const response = await fetch('http://localhost:5000/api/exams', {
+        const response = await fetch('/api/exams', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -227,7 +227,7 @@ window.handleAddQuestion = async function(e) {
     }));
 
     try {
-        const response = await fetch('http://localhost:5000/api/admin/questions', {
+        const response = await fetch('/api/admin/questions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -368,7 +368,7 @@ window.handleExamUpload = async function(e) {
         }
 
         // 3. Create Exam
-        const examResponse = await fetch('http://localhost:5000/api/admin/exams', {
+        const examResponse = await fetch('/api/admin/exams', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -393,7 +393,7 @@ window.handleExamUpload = async function(e) {
         // 4. Upload Questions
         const questionsWithId = questions.map(q => ({ ...q, examId }));
         
-        const questionsResponse = await fetch('http://localhost:5000/api/admin/questions/bulk', {
+        const questionsResponse = await fetch('/api/admin/questions/bulk', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -477,7 +477,7 @@ window.handleNoteUpload = async function(e) {
         const base64File = reader.result;
 
         try {
-            const response = await fetch('http://localhost:5000/api/notes', {
+            const response = await fetch('/api/notes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -522,7 +522,7 @@ window.loadAdminNotes = async function() {
     const token = localStorage.getItem('adminToken');
     
     try {
-        const response = await fetch('http://localhost:5000/api/notes', {
+        const response = await fetch('/api/notes', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -567,7 +567,7 @@ window.deleteNote = async function(id) {
     showConfirm('Are you sure you want to delete this note?', async () => {
         const token = localStorage.getItem('adminToken');
         try {
-            const response = await fetch(`http://localhost:5000/api/notes/${id}`, {
+            const response = await fetch(`/api/notes/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -615,7 +615,7 @@ window.handleNoteUpdate = async function(e) {
     const token = localStorage.getItem('adminToken');
 
     try {
-        const response = await fetch(`http://localhost:5000/api/notes/${id}`, {
+        const response = await fetch(`/api/notes/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -643,7 +643,7 @@ async function loadAnalytics() {
     const token = localStorage.getItem('adminToken');
 
     try {
-        const response = await fetch('http://localhost:5000/api/admin/analytics', {
+        const response = await fetch('/api/admin/analytics', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -693,7 +693,7 @@ window.openStudentAnalyticsModal = async function(userId, userName) {
 
     try {
         // Reuse the existing endpoint to get results
-        const response = await fetch(`http://localhost:5000/api/admin/users/${userId}/results`, {
+        const response = await fetch(`/api/admin/users/${userId}/results`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -805,7 +805,7 @@ window.loadAdminUsers = async function() {
     const token = localStorage.getItem('adminToken');
     
     try {
-        const response = await fetch('http://localhost:5000/api/admin/users', {
+        const response = await fetch('/api/admin/users', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -853,7 +853,7 @@ window.deleteUser = async function(id) {
     showConfirm('Are you sure you want to delete this student? This will also delete their exam results.', async () => {
         const token = localStorage.getItem('adminToken');
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+            const response = await fetch(`/api/admin/users/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -912,7 +912,7 @@ window.viewUserResults = async function(userId, userName) {
     modal.classList.add('flex');
 
     try {
-        const response = await fetch(`http://localhost:5000/api/admin/users/${userId}/results`, {
+        const response = await fetch(`/api/admin/users/${userId}/results`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -962,7 +962,7 @@ window.loadAdminExams = async function() {
     const token = localStorage.getItem('adminToken');
     
     try {
-        const response = await fetch('http://localhost:5000/api/exams', {
+        const response = await fetch('/api/exams', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -1009,7 +1009,7 @@ window.deleteExam = async function(id) {
     showConfirm('Are you sure? This will delete the exam and all associated questions/results.', async () => {
         const token = localStorage.getItem('adminToken');
         try {
-            const response = await fetch(`http://localhost:5000/api/exams/${id}`, {
+            const response = await fetch(`/api/exams/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -1059,7 +1059,7 @@ window.handleExamUpdate = async function(e) {
     const token = localStorage.getItem('adminToken');
 
     try {
-        const response = await fetch(`http://localhost:5000/api/exams/${id}`, {
+        const response = await fetch(`/api/exams/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

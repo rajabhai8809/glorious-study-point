@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        fetch('http://localhost:5000/api/users/profile', {
+        fetch('/api/users/profile', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -238,7 +238,7 @@ window.previewProfileImage = function(event) {
             // Save to DB
             const token = localStorage.getItem('token');
             if (token) {
-                fetch('http://localhost:5000/api/users/profile', {
+                fetch('/api/users/profile', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -283,7 +283,7 @@ window.saveProfileChanges = async function(e) {
     const token = localStorage.getItem('token');
 
     try {
-        const response = await fetch('http://localhost:5000/api/users/profile', {
+        const response = await fetch('/api/users/profile', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -330,7 +330,7 @@ window.loadStudentNotes = async function() {
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     try {
-        const response = await fetch(`http://localhost:5000/api/notes?subject=${subject}&search=${search}`, {
+        const response = await fetch(`/api/notes?subject=${subject}&search=${search}`, {
             headers: headers
         });
         const data = await response.json();
@@ -369,7 +369,7 @@ window.loadStudentNotes = async function() {
 window.trackDownload = async function(noteId) {
     const token = localStorage.getItem('token');
     try {
-        await fetch(`http://localhost:5000/api/notes/${noteId}/download`, {
+        await fetch(`/api/notes/${noteId}/download`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             keepalive: true // Ensures request completes even if page unloads
