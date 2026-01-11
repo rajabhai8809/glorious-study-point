@@ -17,12 +17,25 @@ A comprehensive, secure, and scalable online examination system built with Node.
 
 ## 🐳 Quick Start (Docker)
 
-Agar aapke paas Docker installed hai, toh yeh sabse aasaan tarika hai:
+**Note:** Agar `docker` command error de raha hai, toh neeche diya gaya **"Manual Run"** tarika use karein.
 
 1. Project ke root folder mein terminal open karein.
 2. Command run karein:
    ```bash
-   docker-compose up --build
+   docker compose up --build
+   ```
+
+## ⚡ Manual Run (Recommended if Docker fails)
+
+Agar Docker installed nahi hai, toh yeh tarika sabse fast hai:
+
+1. Terminal mein `backend` folder mein jayein:
+   ```bash
+   cd backend
+   ```
+2. Server start karein:
+   ```bash
+   npm run dev
    ```
 3. Browser mein open karein: `http://localhost:5000`
 

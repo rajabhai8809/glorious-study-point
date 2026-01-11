@@ -10,18 +10,6 @@ services:
       - MONGO_URI=mongodb+srv://tauseefcalling_db_user:sn2gRY1cBVoGMI0e@cluster0.dybksgj.mongodb.net/glorious-study-point?retryWrites=true&w=majority
       - NODE_ENV=development
       - JWT_SECRET=docker_secret_key
-    depends_on:
-      - mongo
     volumes:
       - ./backend:/app
       - /app/node_modules
-
-  mongo:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-
-volumes:
-  mongo-data:
