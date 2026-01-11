@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Questions - Admin</title>
+    <link rel="stylesheet" href="../assets/css/output.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 transition-colors">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-dark dark:bg-slate-950 text-slate-300 flex flex-col">
+            <div class="p-6">
+                <span class="text-xl font-bold text-white">EduSecure Admin</span>
+            </div>
+            <nav class="flex-1 px-4 space-y-2">
+                <a href="admin-dashboard.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Overview
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 bg-primary text-white rounded-lg">
+                    <i data-lucide="file-question" class="w-5 h-5"></i> Question Bank
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="localStorage.removeItem('adminToken'); localStorage.removeItem('adminUser'); window.location.href='admin-login.html'" class="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-slate-800 rounded-lg transition-colors w-full">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold text-dark dark:text-white">Question Bank</h1>
+                <button onclick="openAddQuestionModal()" class="btn-primary flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add Question
+                </button>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex gap-4">
+                    <input type="text" placeholder="Search questions..." class="input-field max-w-xs py-2">
+                    <select class="input-field max-w-xs py-2">
+                        <option>All Subjects</option>
+                        <option>Physics</option>
+                        <option>Math</option>
+                    </select>
+                </div>
+                
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-sm">
+                        <tr>
+                            <th class="p-4 font-medium">ID</th>
+                            <th class="p-4 font-medium">Question</th>
+                            <th class="p-4 font-medium">Subject</th>
+                            <th class="p-4 font-medium">Difficulty</th>
+                            <th class="p-4 font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                            <td class="p-4 text-slate-500 dark:text-slate-400">#1024</td>
+                            <td class="p-4 font-medium text-dark dark:text-white max-w-md truncate">Which law of thermodynamics states that energy...</td>
+                            <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">Physics</span></td>
+                            <td class="p-4"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Hard</span></td>
+                            <td class="p-4 flex gap-2">
+                                <button class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                <button class="p-1 text-red-600 hover:bg-red-50 rounded"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                            <td class="p-4 text-slate-500 dark:text-slate-400">#1025</td>
+                            <td class="p-4 font-medium text-dark dark:text-white max-w-md truncate">Find the derivative of sin(x)...</td>
+                            <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Math</span></td>
+                            <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Easy</span></td>
+                            <td class="p-4 flex gap-2">
+                                <button class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                                <button class="p-1 text-red-600 hover:bg-red-50 rounded"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Question Modal -->
+    <div id="add-question-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-dark dark:text-white">Add New Question</h2>
+                <button onclick="closeAddQuestionModal()" class="text-slate-500 hover:text-dark dark:hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form onsubmit="handleAddQuestion(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Select Exam</label>
+                    <select id="question-exam" class="input-field" required>
+                        <option value="">Loading exams...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Question Text</label>
+                    <textarea id="question-text" class="input-field min-h-[100px]" placeholder="Enter question here..." required></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option 1</label>
+                        <input type="text" class="input-field option-input" data-index="0" placeholder="Option 1" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option 2</label>
+                        <input type="text" class="input-field option-input" data-index="1" placeholder="Option 2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option 3</label>
+                        <input type="text" class="input-field option-input" data-index="2" placeholder="Option 3" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option 4</label>
+                        <input type="text" class="input-field option-input" data-index="3" placeholder="Option 4" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Correct Option</label>
+                        <select id="question-correct" class="input-field" required>
+                            <option value="0">Option 1</option>
+                            <option value="1">Option 2</option>
+                            <option value="2">Option 3</option>
+                            <option value="3">Option 4</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Marks</label>
+                        <input type="number" id="question-marks" class="input-field" value="4" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Difficulty</label>
+                        <select id="question-difficulty" class="input-field">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeAddQuestionModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exams - EduSecure</title>
+    <link rel="stylesheet" href="assets/css/output.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 min-h-screen pb-20 md:pb-0 transition-colors">
+
+    <!-- Navbar (Visible in Dashboard Mode) -->
+    <nav id="exam-navbar" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 py-3 md:py-4 sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="dashboard.html" class="font-bold text-lg md:text-xl text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <i data-lucide="chevron-left" class="w-5 h-5 md:w-6 md:h-6"></i>
+                <span>Back</span> <span class="hidden sm:inline">to Dashboard</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span> System Online
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MODE 1: Exam Listing & History -->
+    <div id="dashboard-mode-container" class="container mx-auto p-4 md:p-6 max-w-6xl">
+        
+        <!-- Header & Tabs -->
+        <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Examination Centre</h1>
+                <p class="text-slate-500 dark:text-slate-400">Select an exam to start or view your past performance.</p>
+            </div>
+            <div class="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                <button onclick="switchTab('available')" id="tab-available" class="px-4 py-2 rounded-md text-sm font-medium bg-primary text-white shadow-sm transition-all">Available Exams</button>
+                <button onclick="switchTab('history')" id="tab-history" class="px-4 py-2 rounded-md text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">History</button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 mb-8 flex flex-col md:flex-row gap-4">
+            <div class="relative flex-1">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                <input type="text" id="search-exams" placeholder="Search exams..." class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 dark:text-white transition-all">
+            </div>
+            <select id="filter-class" class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 dark:text-white transition-all">
+                <option value="all">All Classes</option>
+                <option value="11">Class 11</option>
+                <option value="12">Class 12</option>
+            </select>
+            <select id="filter-subject" class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 dark:text-white transition-all">
+                <option value="all">All Subjects</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Biology">Biology</option>
+                <option value="English">English</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Computer Science">Computer Science</option>
+            </select>
+        </div>
+
+        <!-- Content Grid -->
+        <div id="exams-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Exams will be injected here via JS -->
+            <div class="col-span-full text-center py-12">
+                <div class="animate-spin inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+                <p class="mt-4 text-slate-500">Loading exams...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODE 2: Exam Interface (Hidden by default) -->
+    <div id="exam-mode-container" class="hidden fixed inset-0 bg-slate-50 dark:bg-slate-900 z-50 flex flex-col h-screen">
+        
+        <!-- Exam Header -->
+        <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 py-2 md:px-6 md:py-4 flex justify-between items-center shadow-sm z-10">
+            <div class="flex-1 min-w-0 mr-2">
+                <h1 id="exam-title" class="text-sm md:text-xl font-bold text-slate-900 dark:text-white truncate">Exam Portal</h1>
+                <p id="exam-subject" class="text-[10px] md:text-sm text-slate-500 dark:text-slate-400 truncate">Ready</p>
+            </div>
+            <div class="flex items-center gap-2 md:gap-6 shrink-0">
+                <div class="flex flex-col items-end">
+                    <span id="timer" class="text-base md:text-2xl font-mono font-bold text-primary bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded">00:00</span>
+                </div>
+                <button onclick="submitExam()" class="bg-red-600 hover:bg-red-700 text-white rounded-lg px-3 py-1.5 text-xs md:text-base md:px-6 md:py-2 font-semibold shadow-sm transition-colors">Finish</button>
+            </div>
+        </header>
+
+        <!-- Exam Content -->
+        <main class="flex-1 overflow-y-auto p-6 md:p-8 relative">
+            <div class="max-w-3xl mx-auto">
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full mb-8 overflow-hidden">
+                    <div class="bg-primary h-full w-0 transition-all duration-500" id="progress-bar"></div>
+                </div>
+
+                <!-- Questions -->
+                <div id="question-container">
+                    <!-- Questions injected via JS -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Auto-save Indicator -->
+        <div id="auto-save-status" class="fixed bottom-6 right-6 bg-white dark:bg-slate-800 px-4 py-2 rounded-full shadow-lg border border-slate-100 dark:border-slate-700 text-sm text-slate-500 flex items-center gap-2 opacity-0 transition-opacity">
+            <i data-lucide="cloud" class="w-4 h-4"></i> Saved
+        </div>
+
+        <!-- Security Overlay -->
+        <div id="security-overlay" class="hidden absolute inset-0 bg-slate-900/95 z-[60] flex-col items-center justify-center text-center p-6 backdrop-blur-sm">
+            <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl max-w-md w-full shadow-2xl border border-red-500/50 animate-bounce-in">
+                <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Security Warning</h2>
+                <p class="text-slate-500 dark:text-slate-400 mb-6">
+                    Focus lost! Navigating away from the exam window is a violation of the rules. 
+                    Multiple violations will result in automatic disqualification.
+                </p>
+                <button onclick="resumeExam()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-colors">
+                    I Understand, Resume Exam
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructions-modal" class="fixed inset-0 bg-slate-900/95 z-[100] flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-slate-800 w-full sm:rounded-2xl sm:max-w-2xl shadow-2xl border-t sm:border border-slate-200 dark:border-slate-700 overflow-hidden animate-slide-up flex flex-col max-h-[90vh] sm:h-auto">
+            <div class="p-4 md:p-6 border-b border-slate-100 dark:border-slate-700 shrink-0 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+                <h2 class="text-lg md:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="shield-alert" class="text-primary w-5 h-5 md:w-6 md:h-6"></i> 
+                    <span>Exam Rules</span>
+                </h2>
+            </div>
+            <div class="p-4 md:p-6 space-y-4 text-slate-600 dark:text-slate-300 overflow-y-auto flex-1">
+                <p class="font-medium text-base md:text-lg text-slate-900 dark:text-white">Read carefully:</p>
+                <ul class="list-disc pl-5 space-y-2 text-sm md:text-base">
+                    <li><strong>Full Screen:</strong> Do not exit full screen mode.</li>
+                    <li><strong>No Switching:</strong> Tab switching/minimizing = <span class="text-red-500 font-bold">Auto Submit</span>.</li>
+                    <li><strong>Timer:</strong> Auto-submit when time ends.</li>
+                    <li><strong>No Back Button:</strong> Use "Finish" to submit.</li>
+                </ul>
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 md:p-4 rounded-xl border border-yellow-200 dark:border-yellow-800/50 flex gap-3">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-600 shrink-0"></i>
+                    <p class="text-xs md:text-sm text-yellow-700 dark:text-yellow-400"><strong>Warning:</strong> Violations are recorded.</p>
+                </div>
+            </div>
+            <div class="p-4 md:p-6 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-4 bg-slate-50 dark:bg-slate-900/50 shrink-0">
+                <!-- Language Selection (Moved to Footer for better visibility on mobile) -->
+                <div>
+                    <p class="text-sm font-medium text-slate-900 dark:text-white mb-2">Select Language / भाषा चुनें:</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="flex items-center justify-center gap-2 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 hover:border-primary transition-colors">
+                            <input type="radio" name="exam-lang" value="en" class="w-4 h-4 text-primary" checked>
+                            <span class="text-sm text-slate-700 dark:text-slate-300 font-medium">English</span>
+                        </label>
+                        <label class="flex items-center justify-center gap-2 cursor-pointer p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 hover:border-primary transition-colors">
+                            <input type="radio" name="exam-lang" value="hi" class="w-4 h-4 text-primary">
+                            <span class="text-sm text-slate-700 dark:text-slate-300 font-medium">Hindi</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button onclick="startExamAfterInstructions()" class="btn-primary w-full py-3.5 text-base shadow-lg shadow-primary/20">I Agree & Start Exam</button>
+                <a href="dashboard.html" class="text-center text-slate-500 dark:text-slate-400 text-sm py-2 hover:text-slate-700 dark:hover:text-slate-200">Cancel</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav id="mobile-bottom-nav" class="md:hidden fixed bottom-0 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-around py-3 z-50">
+        <a href="dashboard.html" class="flex flex-col items-center text-slate-400 hover:text-primary transition-colors"><i data-lucide="layout-dashboard" class="w-6 h-6"></i><span class="text-[10px] mt-1">Home</span></a>
+        <a href="exam.html" class="flex flex-col items-center text-primary"><i data-lucide="file-text" class="w-6 h-6"></i><span class="text-[10px] mt-1">Exams</span></a>
+        <a href="notes.html" class="flex flex-col items-center text-slate-400 hover:text-primary transition-colors"><i data-lucide="book-open" class="w-6 h-6"></i><span class="text-[10px] mt-1">Notes</span></a>
+        <a href="leaderboard.html" class="flex flex-col items-center text-slate-400 hover:text-primary transition-colors"><i data-lucide="trophy" class="w-6 h-6"></i><span class="text-[10px] mt-1">Rank</span></a>
+        <a href="profile.html" class="flex flex-col items-center text-slate-400 hover:text-primary transition-colors"><i data-lucide="user" class="w-6 h-6"></i><span class="text-[10px] mt-1">Profile</span></a>
+    </nav>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/exam.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Analytics - Admin</title>
+    <link rel="stylesheet" href="../assets/css/output.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 transition-colors">
+
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-dark dark:bg-slate-950 text-slate-300 flex flex-col fixed h-full z-10">
+            <div class="p-6"><span class="text-xl font-bold text-white">EduSecure Admin</span></div>
+            <nav class="flex-1 px-4 space-y-2">
+                <a href="admin-dashboard.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Overview</a>
+                <a href="exams.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="file-check" class="w-5 h-5"></i> Manage Exams</a>
+                <a href="users.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="users" class="w-5 h-5"></i> Students</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 bg-primary text-white rounded-lg"><i data-lucide="bar-chart-2" class="w-5 h-5"></i> Analytics</a>
+                <a href="notes.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="book-open" class="w-5 h-5"></i> Notes</a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="localStorage.removeItem('adminToken'); localStorage.removeItem('adminUser'); window.location.href='admin-login.html'" class="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-slate-800 rounded-lg transition-colors w-full">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 ml-64">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-dark dark:text-white">Student Analytics</h1>
+                    <p class="text-slate-500 dark:text-slate-400">Identify top performers and areas for improvement.</p>
+                </div>
+                <button onclick="loadAnalytics()" class="btn-secondary flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh</button>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-sm">
+                        <tr>
+                            <th class="p-4 font-medium">Rank</th>
+                            <th class="p-4 font-medium">Student</th>
+                            <th class="p-4 font-medium text-center">Exams Taken</th>
+                            <th class="p-4 font-medium text-center">Avg Score</th>
+                            <th class="p-4 font-medium">Strongest Subject</th>
+                            <th class="p-4 font-medium">Weakest Subject</th>
+                            <th class="p-4 font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="analytics-table" class="text-sm">
+                        <tr><td colspan="6" class="p-4 text-center text-slate-500">Loading analytics...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Student Detailed Analytics Modal -->
+    <div id="student-analytics-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-bold text-dark dark:text-white" id="modal-student-name">Student Analysis</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Detailed performance report</p>
+                </div>
+                <button onclick="closeStudentAnalyticsModal()" class="text-slate-500 hover:text-dark dark:hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Score History Chart -->
+                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <h3 class="font-bold text-dark dark:text-white mb-4">Score Progression</h3>
+                    <div class="h-64">
+                        <canvas id="studentProgressChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Subject Performance Chart -->
+                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <h3 class="font-bold text-dark dark:text-white mb-4">Subject Performance</h3>
+                    <div class="h-64">
+                        <canvas id="studentSubjectChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

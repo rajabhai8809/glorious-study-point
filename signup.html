@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - EduSecure</title>
+    <link rel="stylesheet" href="assets/css/output.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 min-h-screen flex items-center justify-center p-4 relative transition-colors">
+    
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div class="absolute top-[20%] right-[10%] w-72 h-72 bg-purple-100 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute bottom-[10%] left-[20%] w-72 h-72 bg-blue-100 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1.5s;"></div>
+    </div>
+
+    <div class="glass w-full max-w-md p-6 sm:p-8 rounded-2xl animate-slide-up shadow-xl border border-slate-200 dark:border-slate-700/50">
+        <div class="text-center mb-6 sm:mb-8">
+            <div class="w-12 h-12 bg-primary/10 dark:bg-primary/20 text-primary rounded-xl flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="user-plus" class="w-6 h-6"></i>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2">Create Account</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base">Join thousands of students mastering their exams.</p>
+        </div>
+
+        <form id="signupForm" class="space-y-4 sm:space-y-5" onsubmit="handleSignup(event)">
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Full Name</label>
+                <div class="relative">
+                    <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                    <input type="text" id="signup-name" class="input-field pl-12 py-3" placeholder="John Doe" required>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
+                <div class="relative">
+                    <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                    <input type="email" id="signup-email" class="input-field pl-12 py-3" placeholder="student@example.com" required>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Class</label>
+                    <select id="student-class" class="input-field py-3 bg-white dark:bg-slate-800">
+                        <option value="11">Class 11</option>
+                        <option value="12">Class 12</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Stream</label>
+                    <select id="student-stream" class="input-field py-3 bg-white dark:bg-slate-800">
+                        <option value="Science">Science</option>
+                        <option value="Commerce">Commerce</option>
+                        <option value="Arts">Arts</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+                <div class="relative">
+                    <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                    <input type="password" id="signup-password" class="input-field pl-12 pr-10 py-3" placeholder="Create a strong password" required>
+                    <button type="button" onclick="togglePassword('signup-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 z-10 cursor-pointer"><i data-lucide="eye" class="w-5 h-5"></i></button>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+                <div class="flex items-center h-5">
+                    <input type="checkbox" id="terms" class="w-5 h-5 text-primary rounded border-slate-300 focus:ring-primary cursor-pointer" required>
+                </div>
+                <label for="terms" class="text-sm text-slate-600 dark:text-slate-400 leading-5 cursor-pointer">I agree to the <a href="terms.html" class="text-primary font-medium hover:underline">Terms & Conditions</a> and <a href="privacy.html" class="text-primary font-medium hover:underline">Privacy Policy</a></label>
+            </div>
+
+            <button type="submit" class="btn-primary w-full flex justify-center items-center gap-2 py-3 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-[0.98]">
+                <span>Get Started</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </form>
+
+        <div class="mt-8 text-center space-y-4">
+            <p class="text-slate-600 dark:text-slate-400 text-sm">
+                Already have an account? <a href="login.html" class="text-primary font-semibold hover:underline">Sign In</a>
+            </p>
+            <a href="index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

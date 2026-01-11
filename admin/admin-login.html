@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - EduSecure</title>
+    <link rel="stylesheet" href="../assets/css/output.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 min-h-screen flex items-center justify-center p-6 relative overflow-hidden transition-colors">
+    
+    <!-- Background Decoration -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-red-500/20 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="glass w-full max-w-md p-8 rounded-2xl animate-slide-up border-t-4 border-red-500">
+        <div class="text-center mb-8">
+            <div class="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center text-white font-bold text-xl mx-auto mb-4 shadow-lg shadow-red-500/30">
+                <i data-lucide="shield-alert"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-dark dark:text-white">Admin Portal</h1>
+            <p class="text-slate-500 dark:text-slate-400">Secure access for administrators only.</p>
+        </div>
+
+        <form id="adminLoginForm" class="space-y-6" onsubmit="handleAdminLogin(event)">
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
+                <div class="relative">
+                    <i data-lucide="mail" class="absolute left-4 top-3.5 w-5 h-5 text-slate-400"></i>
+                    <input type="email" id="admin-email" class="input-field pl-12" placeholder="tauseef.nucon@gmail.com" required>
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+                <div class="relative">
+                    <i data-lucide="lock" class="absolute left-4 top-3.5 w-5 h-5 text-slate-400"></i>
+                    <input type="password" id="admin-password" class="input-field pl-12 pr-10" placeholder="••••••••" required>
+                    <button type="button" onclick="togglePassword('admin-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 z-10 cursor-pointer"><i data-lucide="eye" class="w-5 h-5"></i></button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary w-full flex justify-center items-center gap-2 bg-red-600 hover:bg-red-700 border-red-600">
+                <span>Access Dashboard</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </form>
+
+        <p class="mt-8 text-center text-slate-600 dark:text-slate-400 text-sm">
+            Not an admin? <a href="../login.html" class="text-primary font-semibold hover:underline">Student Login</a>
+        </p>
+    </div>
+
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

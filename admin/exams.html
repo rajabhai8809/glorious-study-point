@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Exams - EduSecure Admin</title>
+    <link rel="stylesheet" href="../assets/css/output.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 transition-colors">
+
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-slate-900 dark:bg-slate-950 text-slate-300 flex flex-col fixed h-full z-10">
+            <div class="p-6"><span class="text-xl font-bold text-white">EduSecure Admin</span></div>
+            <nav class="flex-1 px-4 space-y-2">
+                <a href="admin-dashboard.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Overview</a>
+                <a href="exams.html" class="flex items-center gap-3 px-4 py-3 bg-primary text-white rounded-lg"><i data-lucide="file-check" class="w-5 h-5"></i> Manage Exams</a>
+                <a href="users.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="users" class="w-5 h-5"></i> Students</a>
+                <a href="analytics.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="bar-chart-2" class="w-5 h-5"></i> Analytics</a>
+                <a href="notes.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="book-open" class="w-5 h-5"></i> Notes</a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="localStorage.removeItem('adminToken'); localStorage.removeItem('adminUser'); window.location.href='admin-login.html'" class="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-slate-800 rounded-lg transition-colors w-full">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 ml-64">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold text-dark dark:text-white">Manage Exams</h1>
+                <div class="flex gap-2">
+                    <button id="refresh-exams-btn" onclick="loadAdminExams()" class="btn-secondary flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh</button>
+                    <a href="upload-exam.html" class="btn-primary flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Create New Exam</a>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-sm">
+                        <tr>
+                            <th class="p-4 font-medium">Title</th>
+                            <th class="p-4 font-medium">Subject</th>
+                            <th class="p-4 font-medium">Duration</th>
+                            <th class="p-4 font-medium">Questions</th>
+                            <th class="p-4 font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-exams-table" class="text-sm">
+                        <tr><td colspan="5" class="p-4 text-center text-slate-500">Loading exams...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Exam Modal -->
+    <div id="edit-exam-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-md shadow-2xl animate-slide-up">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-dark dark:text-white">Edit Exam</h2>
+                <button onclick="closeEditExamModal()" class="text-slate-500 hover:text-dark dark:hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form onsubmit="handleExamUpdate(event)" class="space-y-4">
+                <input type="hidden" id="edit-exam-id">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Exam Title</label>
+                    <input type="text" id="edit-exam-title" class="input-field" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
+                    <textarea id="edit-exam-description" rows="3" class="input-field"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Subject</label>
+                    <select id="edit-exam-subject" class="input-field" required>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="English">English</option>
+                        <option value="Computer Science">Computer Science</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Duration (minutes)</label>
+                    <input type="number" id="edit-exam-duration" class="input-field" required>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeEditExamModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
+```
+
+### 2. Update Sidebars
+Baaki admin pages ke sidebar mein "Manage Exams" ka link add kar raha hoon.
+
+**`admin/admin-dashboard.html`**
+```diff

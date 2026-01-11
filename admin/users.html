@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students - EduSecure Admin</title>
+    <link rel="stylesheet" href="../assets/css/output.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 transition-colors">
+
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-slate-900 dark:bg-slate-950 text-slate-300 flex flex-col fixed h-full z-10">
+            <div class="p-6"><span class="text-xl font-bold text-white">EduSecure Admin</span></div>
+            <nav class="flex-1 px-4 space-y-2">
+                <a href="admin-dashboard.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Overview</a>
+                <a href="exams.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="file-check" class="w-5 h-5"></i> Manage Exams</a>
+                <a href="users.html" class="flex items-center gap-3 px-4 py-3 bg-primary text-white rounded-lg"><i data-lucide="users" class="w-5 h-5"></i> Students</a>
+                <a href="analytics.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="bar-chart-2" class="w-5 h-5"></i> Analytics</a>
+                <a href="notes.html" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 rounded-lg transition-colors"><i data-lucide="book-open" class="w-5 h-5"></i> Notes</a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="localStorage.removeItem('adminToken'); localStorage.removeItem('adminUser'); window.location.href='admin-login.html'" class="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-slate-800 rounded-lg transition-colors w-full">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 ml-64">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold text-dark dark:text-white">Manage Students</h1>
+                <div class="flex gap-2">
+                    <button id="refresh-users-btn" onclick="loadAdminUsers()" class="btn-secondary flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh</button>
+                    <button onclick="exportUsersCSV()" class="btn-primary flex items-center gap-2 bg-green-600 hover:bg-green-700 border-green-600"><i data-lucide="download" class="w-4 h-4"></i> Export CSV</button>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-sm">
+                        <tr>
+                            <th class="p-4 font-medium">Name</th>
+                            <th class="p-4 font-medium">Email</th>
+                            <th class="p-4 font-medium">Class</th>
+                            <th class="p-4 font-medium">Stream</th>
+                            <th class="p-4 font-medium">Joined</th>
+                            <th class="p-4 font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-table" class="text-sm">
+                        <tr><td colspan="6" class="p-4 text-center text-slate-500">Loading students...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- User Results Modal -->
+    <div id="user-results-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-2xl shadow-2xl animate-slide-up max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-bold text-dark dark:text-white" id="modal-user-name">Student Results</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Exam history and performance</p>
+                </div>
+                <button onclick="closeUserResultsModal()" class="text-slate-500 hover:text-dark dark:hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <div class="overflow-y-auto flex-1 pr-2">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-xs uppercase sticky top-0">
+                        <tr><th class="p-3">Exam</th><th class="p-3">Date</th><th class="p-3">Score</th><th class="p-3">Status</th></tr>
+                    </thead>
+                    <tbody id="user-results-table" class="text-sm text-slate-700 dark:text-slate-300"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Result - EduSecure</title>
+    <link rel="stylesheet" href="assets/css/output.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 min-h-screen pb-20 md:pb-0 transition-colors">
+    
+    <!-- Confetti Canvas -->
+    <canvas id="confetti" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 py-3 md:py-4 mb-6 md:mb-8 relative z-[60]">
+        <div class="container mx-auto flex justify-between items-center">
+            <span class="font-bold text-xl text-primary flex items-center gap-2"><i data-lucide="award"></i> EduSecure Results</span>
+            <a href="dashboard.html" class="text-slate-500 dark:text-slate-400 hover:text-dark dark:hover:text-white flex items-center gap-2">
+                <i data-lucide="x" class="w-5 h-5"></i> Close
+            </a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 md:px-6">
+        <div class="max-w-4xl mx-auto">
+
+            <!-- ANALYTICS VIEW (Shown when no specific exam is selected) -->
+            <div id="analytics-view" class="hidden animate-slide-up">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Your Performance Analytics</h1>
+                    <p class="text-slate-500 dark:text-slate-400">Track your progress and identify areas for improvement.</p>
+                </div>
+
+                <!-- Key Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="card flex items-center gap-4 border-l-4 border-l-blue-500">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                            <i data-lucide="activity" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Average Score</p>
+                            <p id="avg-score" class="text-2xl font-bold text-slate-900 dark:text-white">--%</p>
+                        </div>
+                    </div>
+                    <div class="card flex items-center gap-4 border-l-4 border-l-green-500">
+                        <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+                            <i data-lucide="check-circle" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Tests Taken</p>
+                            <p id="total-tests" class="text-2xl font-bold text-slate-900 dark:text-white">--</p>
+                        </div>
+                    </div>
+                    <div class="card flex items-center gap-4 border-l-4 border-l-purple-500">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+                            <i data-lucide="book" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Best Subject</p>
+                            <p id="best-subject" class="text-xl font-bold text-slate-900 dark:text-white">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Area -->
+                <div class="card mb-8">
+                    <h3 class="font-bold text-lg mb-4 text-slate-900 dark:text-white">Score Progression</h3>
+                    <div class="h-64"><canvas id="progressChart"></canvas></div>
+                </div>
+            </div>
+            
+            <!-- SINGLE RESULT VIEW (Existing) -->
+            <div id="single-result-view" class="hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4 md:p-8 mb-6 md:mb-8 text-center relative overflow-hidden animate-slide-up hover:shadow-xl transition-shadow duration-300">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"></div>
+                
+                <h1 id="result-exam-title" class="text-xl md:text-2xl font-bold text-slate-700 dark:text-white mb-2">Loading Result...</h1>
+                <p id="result-date" class="text-sm md:text-base text-slate-500 dark:text-slate-400 mb-6 md:mb-8">...</p>
+
+                <div class="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-12">
+                    <!-- Score Circle -->
+                    <div class="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 192 192">
+                            <circle cx="96" cy="96" r="88" stroke="#E2E8F0" class="dark:stroke-slate-700" stroke-width="12" fill="none"/>
+                            <circle id="score-circle-stroke" cx="96" cy="96" r="88" stroke="#22C55E" stroke-width="12" fill="none" stroke-dasharray="552" stroke-dashoffset="552" class="transition-all duration-1000 ease-out"/>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="score-percentage" class="text-2xl sm:text-3xl md:text-4xl font-bold text-dark dark:text-white">0%</span>
+                            <span class="text-sm text-slate-500 dark:text-slate-400">Score</span>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-2 gap-4 md:gap-6 text-left w-full md:w-auto">
+                        <div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm">Correct</p>
+                            <p id="stat-correct" class="text-xl md:text-2xl font-bold text-green-600">-</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm">Wrong</p>
+                            <p id="stat-wrong" class="text-xl md:text-2xl font-bold text-red-500">-</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm">Skipped</p>
+                            <p id="stat-skipped" class="text-xl md:text-2xl font-bold text-slate-600 dark:text-slate-300">-</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm">Accuracy</p>
+                            <p id="stat-accuracy" class="text-xl md:text-2xl font-bold text-primary">-%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 animate-slide-up" style="animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards;">
+                <div class="card !p-4 md:!p-6 hover:scale-[1.02] transition-transform duration-300">
+                    <h3 class="font-bold mb-4 text-dark dark:text-white">Performance Analysis</h3>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                
+                <div class="card !p-4 md:!p-6 hover:scale-[1.02] transition-transform duration-300">
+                    <h3 class="font-bold mb-4 text-dark dark:text-white">Leaderboard Rank</h3>
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600">
+                            <i data-lucide="trophy" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <p id="rank-display" class="text-2xl md:text-3xl font-bold text-dark dark:text-white">#--</p>
+                            <p id="rank-percentile" class="text-sm text-slate-500 dark:text-slate-400">Calculating...</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-dark dark:text-white">You</span>
+                            <span id="rank-points" class="font-bold">- pts</span>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                            <div id="rank-bar" class="bg-primary h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-slate-400">
+                            <span>Topper</span>
+                            <span>98 pts</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Answers Section -->
+            <div class="mt-8 text-center">
+                <button onclick="toggleReview()" class="text-primary font-medium hover:underline flex items-center justify-center gap-2 mx-auto">
+                    <span>Review Your Answers</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                </button>
+                
+                <div id="review-container" class="hidden mt-6 text-left space-y-6">
+                    <!-- Questions injected here -->
+                </div>
+            </div>
+            </div> <!-- End Single Result View -->
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="md:hidden fixed bottom-0 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-around py-3 z-50">
+        <a href="dashboard.html" class="flex flex-col items-center text-slate-400 hover:text-primary transition-colors"><i data-lucide="layout-dashboard" class="w-6 h-6"></i><span class="text-[10px] mt-1">Home</span></a>
+        <a href="exam.html" class="flex flex-col items-center text-slate-400 hover:text-primary transition-colors"><i data-lucide="file-text" class="w-6 h-6"></i><span class="text-[10px] mt-1">Exams</span></a>
+        <a href="notes.html" class="flex flex-col items-center text-slate-400 hover:text-primary transition-colors"><i data-lucide="book-open" class="w-6 h-6"></i><span class="text-[10px] mt-1">Notes</span></a>
+        <a href="leaderboard.html" class="flex flex-col items-center text-slate-400 hover:text-primary transition-colors"><i data-lucide="trophy" class="w-6 h-6"></i><span class="text-[10px] mt-1">Rank</span></a>
+        <a href="profile.html" class="flex flex-col items-center text-slate-400 hover:text-primary transition-colors"><i data-lucide="user" class="w-6 h-6"></i><span class="text-[10px] mt-1">Profile</span></a>
+    </nav>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/result.js"></script>
+</body>
+</html>
