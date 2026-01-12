@@ -111,6 +111,9 @@ Once the build finishes, Render will provide a URL (e.g., `https://edusecure-app
 
 ### Common Deployment Errors
 
+**Error: `Could not connect to any servers... IP that isn't whitelisted`**
+This means MongoDB Atlas is blocking the connection. Follow **Step 1: Setup Database** above and ensure you selected **"Allow Access from Anywhere"** (`0.0.0.0/0`) in Network Access.
+
 **Error: `operation users.find() buffering timed out`**
 This means the server cannot connect to MongoDB. To fix this:
 

@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadSettings() {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch('http://localhost:5000/api/users/profile', {
+        const response = await fetch('/api/users/profile', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -20,7 +20,7 @@ async function loadSettings() {
 async function toggleNotificationSettings() {
     const token = localStorage.getItem('token');
     try {
-        await fetch('http://localhost:5000/api/users/notifications/toggle', {
+        await fetch('/api/users/notifications/toggle', {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -49,7 +49,7 @@ async function handleChangePassword(e) {
     const token = localStorage.getItem('token');
 
     try {
-        const response = await fetch('http://localhost:5000/api/users/change-password', {
+        const response = await fetch('/api/users/change-password', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

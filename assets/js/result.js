@@ -31,7 +31,7 @@ async function loadResultData() {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/exams/${examId}/result`, {
+        const response = await fetch(`/api/exams/${examId}/result`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -54,7 +54,7 @@ async function loadAnalyticsView(token) {
     document.getElementById('analytics-view').classList.remove('hidden');
 
     try {
-        const response = await fetch('http://localhost:5000/api/users/history', {
+        const response = await fetch('/api/users/history', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();

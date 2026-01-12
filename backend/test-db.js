@@ -13,5 +13,8 @@ mongoose.connect(uri)
   })
   .catch(err => {
     console.error("❌ Connection Failed:", err.message);
+    if (err.message.includes('IP that isn\'t whitelisted')) {
+      console.error('\n👉 SOLUTION: Go to MongoDB Atlas -> Network Access -> Add IP Address -> Allow Access from Anywhere (0.0.0.0/0)');
+    }
     process.exit(1);
   });

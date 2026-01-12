@@ -149,13 +149,13 @@ async function loadAvailableExams() {
 
     try {
         // 1. Fetch All Exams
-        const examsResponse = await fetch('http://localhost:5000/api/exams', {
+        const examsResponse = await fetch('/api/exams', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const examsData = await examsResponse.json();
         
         // 2. Fetch User History to filter out taken exams
-        const historyResponse = await fetch('http://localhost:5000/api/users/history', {
+        const historyResponse = await fetch('/api/users/history', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const historyData = await historyResponse.json();
@@ -189,7 +189,7 @@ async function loadExamHistory() {
 
     try {
         // Assuming endpoint exists based on user controller
-        const response = await fetch('http://localhost:5000/api/users/history', {
+        const response = await fetch('/api/users/history', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -277,7 +277,7 @@ window.deleteHistory = async function(resultId) {
 
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`http://localhost:5000/api/users/history/${resultId}`, {
+        const response = await fetch(`/api/users/history/${resultId}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -351,7 +351,7 @@ async function startExamSession(examId) {
     document.getElementById('exam-subject').innerText = 'Please wait...';
 
     try {
-        const response = await fetch(`http://localhost:5000/api/exams/${examId}/start`, {
+        const response = await fetch(`/api/exams/${examId}/start`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -478,7 +478,7 @@ window.submitExam = async function(force = false) {
 async function processSubmission() {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`http://localhost:5000/api/exams/${currentExamId}/submit`, {
+        const response = await fetch(`/api/exams/${currentExamId}/submit`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

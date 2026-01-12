@@ -65,45 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('analytics-table')) {
         loadAnalytics();
     }
-
-    // --- Dynamic Form Injection for Upload Modal ---
-    const subjectSelect = document.getElementById('exam-subject');
-    if (subjectSelect) {
-        // 1. Populate Subjects
-        const subjects = ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'English', 'Hindi', 'Computer Science', 'History', 'Geography', 'Economics'];
-        subjectSelect.innerHTML = '<option value="">Select Subject</option>' + 
-            subjects.map(s => `<option value="${s}">${s}</option>`).join('');
-
-        // 2. Inject Class Dropdown if missing
-        if (!document.getElementById('exam-class')) {
-            const classWrapper = document.createElement('div');
-            classWrapper.className = "space-y-2 mt-4";
-            classWrapper.innerHTML = `
-                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Class</label>
-                <div class="relative">
-                    <select id="exam-class" class="w-full pl-3 pr-10 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:text-white appearance-none">
-                        <option value="11">Class 11</option>
-                        <option value="12" selected>Class 12</option>
-                    </select>
-                </div>
-            `;
-            subjectSelect.closest('div').after(classWrapper);
-        }
-
-        // 3. Inject Title Input if missing
-        if (!document.getElementById('exam-title-input')) {
-            const titleWrapper = document.createElement('div');
-            titleWrapper.className = "space-y-2 mb-4";
-            titleWrapper.innerHTML = `
-                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Exam Title</label>
-                <div class="relative">
-                    <input type="text" id="exam-title-input" placeholder="Enter exam title (Optional)" class="w-full pl-3 pr-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:text-white">
-                </div>
-                <p class="text-xs text-slate-500">If empty, title from HTML file will be used.</p>
-            `;
-            subjectSelect.closest('div').before(titleWrapper);
-        }
-    }
 });
 
 async function loadDashboardStats() {
@@ -273,6 +234,63 @@ window.handleAddQuestion = async function(e) {
     } finally {
         btn.disabled = false;
         btn.innerText = originalText;
+    }
+};
+
+// --- Exam Upload Modal ---
+
+window.openUploadExamModal = function() {
+    const modal = document.getElementById('upload-exam-modal');
+    if (modal) {
+        // --- Dynamic Form Injection for Upload Modal ---
+        const subjectSelect = document.getElementById('exam-subject');
+        if (subjectSelect && subjectSelect.options.length <= 1) { // Populate only once
+            // 1. Populate Subjects
+            const subjects = ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'English', 'Hindi', 'Computer Science', 'History', 'Geography', 'Economics'];
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>' + 
+                subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+
+            // 2. Inject Class Dropdown if missing
+            if (!document.getElementById('exam-class')) {
+                const classWrapper = document.createElement('div');
+                classWrapper.className = "space-y-2 mt-4";
+                classWrapper.innerHTML = `
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Class</label>
+                    <div class="relative">
+                        <select id="exam-class" class="w-full pl-3 pr-10 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:text-white appearance-none">
+                            <option value="11">Class 11</option>
+                            <option value="12" selected>Class 12</option>
+                        </select>
+                    </div>
+                `;
+                subjectSelect.closest('div').after(classWrapper);
+            }
+
+            // 3. Inject Title Input if missing
+            if (!document.getElementById('exam-title-input')) {
+                const titleWrapper = document.createElement('div');
+                titleWrapper.className = "space-y-2 mb-4";
+                titleWrapper.innerHTML = `
+                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Exam Title</label>
+                    <div class="relative">
+                        <input type="text" id="exam-title-input" placeholder="Enter exam title (Optional)" class="w-full pl-3 pr-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:text-white">
+                    </div>
+                    <p class="text-xs text-slate-500">If empty, title from HTML file will be used.</p>
+                `;
+                subjectSelect.closest('div').before(titleWrapper);
+            }
+        }
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+};
+
+window.closeUploadExamModal = function() {
+    const modal = document.getElementById('upload-exam-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
     }
 };
 
@@ -498,7 +516,7 @@ window.handleNoteUpload = async function(e) {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ title, subject, fileUrl: base64File, type: 'PDF' })
+                body: JSON.stringify({ title, subject, content: base64File, type: 'PDF' })
             });
             const data = await response.json();
             if (data.success) {
@@ -554,8 +572,8 @@ window.loadAdminNotes = async function() {
                         <td data-label="Type" class="p-4 text-slate-500">${note.type || 'PDF'}</td>
                         <td data-label="Downloads" class="p-4 font-bold text-slate-700 dark:text-slate-300">${note.downloads || 0}</td>
                         <td data-label="Actions" class="p-4 flex gap-2">
-                            <a href="${note.content}" target="_blank" class="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="View" aria-label="View Note"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                            <a href="${note.content}" download="${note.title}.pdf" class="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded" title="Download" aria-label="Download Note"><i data-lucide="download" class="w-4 h-4"></i></a>
+                            <a href="${note.content || note.fileUrl}" target="_blank" class="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="View" aria-label="View Note"><i data-lucide="eye" class="w-4 h-4"></i></a>
+                            <a href="${note.content || note.fileUrl}" download="${note.title}.pdf" class="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded" title="Download" aria-label="Download Note"><i data-lucide="download" class="w-4 h-4"></i></a>
                             <button onclick="openEditNoteModal('${note._id}')" class="p-1 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded" title="Edit" aria-label="Edit Note"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
                             <button onclick="deleteNote('${note._id}')" class="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Delete" aria-label="Delete Note"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </td>

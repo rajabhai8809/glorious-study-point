@@ -351,7 +351,7 @@ window.loadStudentNotes = async function() {
                     </div>
                     <h3 class="font-bold text-lg mb-2 text-dark dark:text-white">${note.title}</h3>
                     <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Uploaded on ${new Date(note.createdAt).toLocaleDateString()}</p>
-                    <a href="${note.content}" download="${note.title}.pdf" onclick="trackDownload('${note._id}')" class="btn-primary w-full py-2 flex items-center justify-center gap-2 shadow-sm">
+                    <a href="${note.content || note.fileUrl}" download="${note.title}.pdf" onclick="trackDownload('${note._id}')" class="btn-primary w-full py-2 flex items-center justify-center gap-2 shadow-sm">
                         <i data-lucide="download" class="w-4 h-4"></i> Download PDF
                     </a>
                 </div>
