@@ -9,9 +9,11 @@ services:
       - "5000:5000"
     environment:
       - PORT=5000
-      - MONGO_URI=mongodb+srv://tauseefcalling_db_user:sn2gRY1cBVoGMI0e@cluster0.dybksgj.mongodb.net/glorious-study-point?retryWrites=true&w=majority
+      - MONGO_URI=mongodb+srv://tauseefcalling_db_user:password123@cluster0.dybksgj.mongodb.net/glorious-study-point?retryWrites=true&w=majority
       - NODE_ENV=development
       - JWT_SECRET=docker_secret_key
+      - JWT_EXPIRE=30d
+      - JWT_COOKIE_EXPIRE=30
     volumes:
       - ./backend:/app
       - /app/node_modules

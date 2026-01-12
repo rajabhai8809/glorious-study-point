@@ -3,15 +3,30 @@
  * Handles admin-specific interactions.
  */
 
+// 🔒 Security Check: Redirect immediately if not logged in
+(function() {
+    // Prevent redirect loop if already on login page
+    if (window.location.pathname.includes('admin-login.html')) return;
+
+    const token = localStorage.getItem('adminToken');
+    const user = JSON.parse(localStorage.getItem('adminUser') || '{}');
+
+    if (!token || user.role !== 'admin') {
+        window.location.href = 'admin-login.html';
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     // Security Check: Ensure user is Admin
     const token = localStorage.getItem('adminToken');
     const user = JSON.parse(localStorage.getItem('adminUser') || '{}');
 
     if (!token || user.role !== 'admin') {
-        window.location.href = 'admin-login.html';
         return;
     }
+
+    // 📱 Initialize Mobile UI (Sidebar & Tables)
+    initMobileAdminUI();
 
     // Initialize delete buttons
     const deleteBtns = document.querySelectorAll('button i[data-lucide="trash-2"]');
@@ -120,10 +135,10 @@ async function loadDashboardStats() {
             const tbody = document.getElementById('recent-users-table');
             tbody.innerHTML = data.data.recentUsers.map(user => `
                 <tr class="border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td class="py-3 font-medium text-slate-900 dark:text-white">${user.name}</td>
-                    <td class="py-3 text-slate-500 dark:text-slate-400">${user.email}</td>
-                    <td class="py-3 text-slate-500 dark:text-slate-400">${new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td class="py-3"><span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded text-xs font-bold">Active</span></td>
+                    <td data-label="Name" class="py-3 font-medium text-slate-900 dark:text-white">${user.name}</td>
+                    <td data-label="Email" class="py-3 text-slate-500 dark:text-slate-400">${user.email}</td>
+                    <td data-label="Joined" class="py-3 text-slate-500 dark:text-slate-400">${new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td data-label="Status" class="py-3"><span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded text-xs font-bold">Active</span></td>
                 </tr>
             `).join('');
         }
@@ -534,11 +549,11 @@ window.loadAdminNotes = async function() {
             } else {
                 tbody.innerHTML = data.data.map(note => `
                     <tr class="border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                        <td class="p-4 font-medium text-dark dark:text-white">${note.title}</td>
-                        <td class="p-4"><span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs">${note.subjectId?.name || 'General'}</span></td>
-                        <td class="p-4 text-slate-500">${note.type || 'PDF'}</td>
-                        <td class="p-4 font-bold text-slate-700 dark:text-slate-300">${note.downloads || 0}</td>
-                        <td class="p-4 flex gap-2">
+                        <td data-label="Title" class="p-4 font-medium text-dark dark:text-white">${note.title}</td>
+                        <td data-label="Subject" class="p-4"><span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs">${note.subjectId?.name || 'General'}</span></td>
+                        <td data-label="Type" class="p-4 text-slate-500">${note.type || 'PDF'}</td>
+                        <td data-label="Downloads" class="p-4 font-bold text-slate-700 dark:text-slate-300">${note.downloads || 0}</td>
+                        <td data-label="Actions" class="p-4 flex gap-2">
                             <a href="${note.content}" target="_blank" class="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="View" aria-label="View Note"><i data-lucide="eye" class="w-4 h-4"></i></a>
                             <a href="${note.content}" download="${note.title}.pdf" class="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded" title="Download" aria-label="Download Note"><i data-lucide="download" class="w-4 h-4"></i></a>
                             <button onclick="openEditNoteModal('${note._id}')" class="p-1 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded" title="Edit" aria-label="Edit Note"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
@@ -636,6 +651,249 @@ window.handleNoteUpdate = async function(e) {
     }
 };
 
+// Global Logout for Admin
+window.logout = function() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        window.location.href = 'admin-login.html';
+    }
+};
+
+// --- 📱 Mobile UI Helpers ---
+
+function initMobileAdminUI() {
+    // 0. Inject Critical CSS for Mobile (Fail-safe for missing Tailwind classes)
+    const style = document.createElement('style');
+    style.textContent = `
+        @media (max-width: 768px) {
+            aside {
+                display: none !important;
+            }
+            main {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 1rem !important;
+                padding-bottom: 80px !important; /* Space for bottom nav */
+            }
+            
+            /* --- 1. Page Layout Fixes (Headers & Filters) --- */
+            
+            /* Stack Page Header (Title + Add Button) */
+            main > div.flex.justify-between,
+            main > div.flex.items-center {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 1rem !important;
+                margin-bottom: 1.5rem !important;
+            }
+            
+            /* Make Top-Level "Add New" buttons full width */
+            main > div.flex > button,
+            main > div.flex > a.btn-primary {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+            
+            /* Stack Filter Bars */
+            .bg-white.rounded-xl.flex,
+            .bg-white.rounded-xl.shadow-sm.flex {
+                flex-direction: column !important;
+                gap: 0.75rem !important;
+                padding: 1rem !important;
+                height: auto !important;
+            }
+            
+            /* Inputs Full Width */
+            input[type="text"], select {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            
+            /* Fix Search Container */
+            .relative {
+                width: 100% !important;
+            }
+
+            /* --- Bottom Navigation Bar --- */
+            #admin-bottom-nav {
+                display: flex !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                border-top: 1px solid #e2e8f0;
+                padding: 0.75rem;
+                justify-content: space-around;
+                align-items: center;
+                z-index: 50;
+                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+                padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+            }
+            .dark #admin-bottom-nav {
+                background: #0f172a;
+                border-color: #1e293b;
+            }
+            
+            /* Active Link Style */
+            #admin-bottom-nav a.active {
+                color: #2563EB;
+            }
+            .dark #admin-bottom-nav a.active {
+                color: #60A5FA;
+            }
+
+            /* --- Tables to Cards Transformation --- */
+            table, thead, tbody, th, td, tr { 
+                display: block !important; 
+                width: 100% !important; 
+            }
+            thead { display: none !important; }
+            
+            /* Fix Cards Joining: Use Flex gap on container */
+            tbody {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 1rem !important; /* Space between cards */
+            }
+            
+            tr {
+                background: white;
+                margin-bottom: 0 !important; /* Handled by gap */
+                border-radius: 0.75rem !important;
+                padding: 1rem !important;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+                border: 1px solid #e2e8f0 !important;
+            }
+            .dark tr { 
+                background: #1e293b !important; 
+                border-color: #334155 !important; 
+            }
+            
+            td {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                padding: 0.5rem 0 !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                text-align: right !important;
+                min-height: 2.5rem;
+            }
+            .dark td { border-color: #334155 !important; }
+            
+            td:last-child { 
+                border-bottom: none !important; 
+                padding-top: 1rem !important;
+                justify-content: flex-end !important;
+                flex-wrap: wrap !important; /* Fix for Notes actions */
+                gap: 0.5rem !important;
+            }
+            
+            /* Labels */
+            td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #64748b;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                text-align: left;
+                margin-right: 1rem;
+            }
+            .dark td::before { color: #94a3b8 !important; }
+            
+            /* --- Fix Action Buttons inside Cards --- */
+            td button, td a {
+                width: auto !important;
+                display: inline-flex !important;
+            }
+        }
+        @media (min-width: 769px) {
+            #admin-bottom-nav {
+                display: none !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // 0. Ensure Viewport Meta Tag exists (Crucial for mobile responsiveness)
+    if (!document.querySelector('meta[name="viewport"]')) {
+        const meta = document.createElement('meta');
+        meta.name = "viewport";
+        meta.content = "width=device-width, initial-scale=1.0";
+        document.head.appendChild(meta);
+    }
+
+    // 1. Inject Bottom Navigation (Like Student Dashboard)
+    const bottomNav = document.createElement('nav');
+    bottomNav.id = 'admin-bottom-nav';
+    bottomNav.innerHTML = `
+        <a href="admin-dashboard.html" class="flex flex-col items-center text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors">
+            <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+            <span class="text-[10px] mt-1 font-medium">Home</span>
+        </a>
+        <a href="users.html" class="flex flex-col items-center text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors">
+            <i data-lucide="users" class="w-6 h-6"></i>
+            <span class="text-[10px] mt-1 font-medium">Users</span>
+        </a>
+        <a href="exams.html" class="flex flex-col items-center text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors">
+            <i data-lucide="file-text" class="w-6 h-6"></i>
+            <span class="text-[10px] mt-1 font-medium">Exams</span>
+        </a>
+        <a href="notes.html" class="flex flex-col items-center text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors">
+            <i data-lucide="book" class="w-6 h-6"></i>
+            <span class="text-[10px] mt-1 font-medium">Notes</span>
+        </a>
+        <button onclick="logout()" class="flex flex-col items-center text-slate-500 dark:text-slate-400 hover:text-red-600 transition-colors">
+            <i data-lucide="log-out" class="w-6 h-6"></i>
+            <span class="text-[10px] mt-1 font-medium">Exit</span>
+        </button>
+    `;
+    document.body.appendChild(bottomNav);
+
+    // 2. Highlight Active Link
+    const currentPath = window.location.pathname.split('/').pop() || 'admin-dashboard.html';
+    const links = bottomNav.querySelectorAll('a');
+    links.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active', 'text-blue-600', 'dark:text-blue-400');
+            link.classList.remove('text-slate-500', 'dark:text-slate-400');
+        }
+    });
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // 3. 🔄 Auto-Reorder Layout for Mobile (Quick Actions below Header)
+    if (window.innerWidth < 768) {
+        setTimeout(() => {
+            const main = document.querySelector('main');
+            if (main) {
+                // Find Header
+                const header = main.querySelector('header') || main.querySelector('div.flex.justify-between');
+                
+                // Find Quick Actions Section (by ID, Class, or Heading Text)
+                let quickActions = document.getElementById('quick-actions') || document.querySelector('.quick-actions');
+                
+                if (!quickActions) {
+                    const headings = main.querySelectorAll('h2, h3, h4');
+                    for (const h of headings) {
+                        if (h.innerText.toLowerCase().includes('quick action')) {
+                            quickActions = h.parentElement; // Assuming wrapper div
+                            break;
+                        }
+                    }
+                }
+
+                // Move Quick Actions after Header
+                if (header && quickActions && quickActions.parentNode === main) {
+                    header.after(quickActions);
+                    quickActions.classList.add('mb-6', 'mt-4'); // Add spacing
+                }
+            }
+        }, 50);
+    }
+}
+
 // --- Analytics Logic ---
 
 async function loadAnalytics() {
@@ -654,16 +912,16 @@ async function loadAnalytics() {
             } else {
                 tbody.innerHTML = data.data.map((student, index) => `
                     <tr class="border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                        <td class="p-4 font-bold text-slate-400">#${index + 1}</td>
-                        <td class="p-4">
+                        <td data-label="Rank" class="p-4 font-bold text-slate-400">#${index + 1}</td>
+                        <td data-label="Student" class="p-4">
                             <div class="font-medium text-dark dark:text-white">${student.name}</div>
                             <div class="text-xs text-slate-500">${student.email}</div>
                         </td>
-                        <td class="p-4 text-center font-bold">${student.totalExams}</td>
-                        <td class="p-4 text-center"><span class="px-2 py-1 rounded text-xs font-bold ${student.avgScore >= 80 ? 'bg-green-100 text-green-700' : student.avgScore >= 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">${student.avgScore}%</span></td>
-                        <td class="p-4 text-green-600 font-medium">${student.strongestSubject}</td>
-                        <td class="p-4 text-red-500 font-medium">${student.weakestSubject}</td>
-                        <td class="p-4">
+                        <td data-label="Exams Taken" class="p-4 text-center font-bold">${student.totalExams}</td>
+                        <td data-label="Avg Score" class="p-4 text-center"><span class="px-2 py-1 rounded text-xs font-bold ${student.avgScore >= 80 ? 'bg-green-100 text-green-700' : student.avgScore >= 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">${student.avgScore}%</span></td>
+                        <td data-label="Strongest" class="p-4 text-green-600 font-medium">${student.strongestSubject}</td>
+                        <td data-label="Weakest" class="p-4 text-red-500 font-medium">${student.weakestSubject}</td>
+                        <td data-label="Actions" class="p-4">
                             <button onclick="openStudentAnalyticsModal('${student.id}', '${student.name}')" class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors" title="View Detailed Analysis"><i data-lucide="pie-chart" class="w-5 h-5"></i></button>
                         </td>
                     </tr>
@@ -820,12 +1078,12 @@ window.loadAdminUsers = async function() {
                     const safeName = user.name ? user.name.replace(/'/g, "\\'").replace(/"/g, "&quot;") : 'Student';
                     return `
                         <tr class="border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                            <td class="p-4 font-medium text-dark dark:text-white">${user.name}</td>
-                            <td class="p-4 text-slate-500">${user.email}</td>
-                            <td class="p-4 text-slate-500">${user.studentClass || 'N/A'}</td>
-                            <td class="p-4 text-slate-500">${user.stream || 'N/A'}</td>
-                            <td class="p-4 text-slate-500">${new Date(user.createdAt).toLocaleDateString()}</td>
-                            <td class="p-4 flex gap-2">
+                            <td data-label="Name" class="p-4 font-medium text-dark dark:text-white">${user.name}</td>
+                            <td data-label="Email" class="p-4 text-slate-500">${user.email}</td>
+                            <td data-label="Class" class="p-4 text-slate-500">${user.studentClass || 'N/A'}</td>
+                            <td data-label="Stream" class="p-4 text-slate-500">${user.stream || 'N/A'}</td>
+                            <td data-label="Joined" class="p-4 text-slate-500">${new Date(user.createdAt).toLocaleDateString()}</td>
+                            <td data-label="Actions" class="p-4 flex gap-2">
                                 <button onclick="viewUserResults('${user._id}', '${safeName}')" class="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded" title="View Results" aria-label="View Results for ${safeName}"><i data-lucide="file-text" class="w-4 h-4"></i></button>
                                 <button onclick="deleteUser('${user._id}')" class="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Delete User" aria-label="Delete User ${safeName}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </td>
@@ -974,11 +1232,11 @@ window.loadAdminExams = async function() {
             } else {
                 tbody.innerHTML = data.data.map(exam => `
                     <tr class="border-b border-slate-50 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                        <td class="p-4 font-medium text-dark dark:text-white">${exam.title}</td>
-                        <td class="p-4"><span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs">${exam.subject}</span></td>
-                        <td class="p-4 text-slate-500">${exam.duration} mins</td>
-                        <td class="p-4 font-bold text-slate-700 dark:text-slate-300">${exam.totalQuestions || 0}</td>
-                        <td class="p-4 flex gap-2">
+                        <td data-label="Title" class="p-4 font-medium text-dark dark:text-white">${exam.title}</td>
+                        <td data-label="Subject" class="p-4"><span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs">${exam.subject}</span></td>
+                        <td data-label="Duration" class="p-4 text-slate-500">${exam.duration} mins</td>
+                        <td data-label="Questions" class="p-4 font-bold text-slate-700 dark:text-slate-300">${exam.totalQuestions || 0}</td>
+                        <td data-label="Actions" class="p-4 flex gap-2">
                             <button onclick="openEditExamModal('${exam._id}')" class="p-1 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded" title="Edit" aria-label="Edit Exam"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
                             <button onclick="deleteExam('${exam._id}')" class="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded" title="Delete" aria-label="Delete Exam"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </td>

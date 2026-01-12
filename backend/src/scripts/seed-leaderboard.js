@@ -32,7 +32,8 @@ const seedLeaderboard = async () => {
             { name: 'Myra Singh', email: 'myra.s@example.com', score: 38, correct: 38 },
             { name: 'Kabir Das', email: 'kabir.d@example.com', score: 35, correct: 35 },
             { name: 'Anaya Malhotra', email: 'anaya.m@example.com', score: 30, correct: 30 },
-            { name: 'Rohan Sharma', email: 'rohan.s@example.com', score: 25, correct: 25 }
+            { name: 'Rohan Sharma', email: 'rohan.s@example.com', score: 25, correct: 25 },
+            { name: 'Demo User', email: 'demo.user@example.com', score: 20, correct: 20 }
         ];
 
         // --- Create Admin User (For Admin Panel Access) ---

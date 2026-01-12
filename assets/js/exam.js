@@ -3,6 +3,14 @@
  * Handles Exam Listing (Dashboard) and Exam Taking Interface.
  */
 
+// 🔒 Security Check: Redirect immediately if not logged in
+(function() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+})();
+
 let currentExamId = null;
 let examQuestions = [];
 let userAnswers = {};

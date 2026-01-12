@@ -87,10 +87,20 @@ async function handleSignup(e) {
         const data = await response.json();
 
         if (response.ok) {
-            showToast('Account created! Please login.', 'success');
-            window.location.href = 'login.html';
+            showToast('Account created! Redirecting to login...', 'success');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
         } else {
             showToast(data.message || 'Signup failed', 'error');
+            
+            // Redirect if user already exists
+            if (data.message && (data.message.toLowerCase().includes('exist') || data.message.toLowerCase().includes('duplicate'))) {
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            }
+            
             btn.innerHTML = originalText;
             btn.disabled = false;
         }

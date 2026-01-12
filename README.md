@@ -106,3 +106,20 @@ Once the build finishes, Render will provide a URL (e.g., `https://edusecure-app
 - **Auth**: `/api/auth/register`, `/api/auth/login`
 - **Exams**: `/api/exams`, `/api/exams/:id/start`
 - **Admin**: `/api/admin/questions`, `/api/admin/exams`
+
+## ❓ Troubleshooting
+
+### Common Deployment Errors
+
+**Error: `operation users.find() buffering timed out`**
+This means the server cannot connect to MongoDB. To fix this:
+
+1. **Whitelist IP in MongoDB Atlas**:
+   - Go to **Network Access** in MongoDB Atlas.
+   - Click **Add IP Address**.
+   - Select **Allow Access from Anywhere** (`0.0.0.0/0`).
+   - Click **Confirm**.
+
+2. **Check Connection String**:
+   - Ensure `MONGO_URI` in your hosting dashboard (Render/Vercel) is correct.
+   - Ensure the password inside the URI does not contain special characters like `@` (unless encoded) and brackets `< >` are removed.
