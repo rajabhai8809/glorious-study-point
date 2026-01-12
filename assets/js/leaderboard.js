@@ -115,6 +115,8 @@ function renderLeaderboard(data) {
                 <div class="mt-1">${getRankChangeHtml(third.rankChange || 0)}</div>
             </div>
         `;
+    } else {
+        podiumContainer.innerHTML = `<div class="col-span-full w-full text-center text-slate-400 py-10 italic">No leaderboard data available for this timeframe.</div>`;
     }
 
     // 2. Render List (Rest)

@@ -17,6 +17,7 @@ const seedLeaderboard = async () => {
         if (!mongoUri || mongoUri.includes('<db_password>')) {
             throw new Error('MONGO_URI is invalid or contains <db_password>. Please check backend/.env');
         }
+        console.log(`Target DB: ${mongoUri.includes('localhost') ? 'Localhost' : 'MongoDB Atlas (Cloud)'}`);
         await mongoose.connect(mongoUri);
         console.log('Connected!');
 
@@ -62,6 +63,7 @@ const seedLeaderboard = async () => {
 
         // Clear existing results for clean slate
         await Result.deleteMany({});
+        console.log('🗑️  Cleared old results.');
         
         for (const sub of subjects) {
             // Create or find exam for this subject
@@ -97,6 +99,7 @@ const seedLeaderboard = async () => {
             // Assign results for 3 random exams per user
             const shuffledExams = exams.sort(() => 0.5 - Math.random()).slice(0, 3);
             
+            let resultsAdded = 0;
             for (const exam of shuffledExams) {
                 // Randomize score slightly around the user's base score
                 const score = Math.max(0, Math.min(50, u.score + Math.floor(Math.random() * 5) - 2));
@@ -112,8 +115,9 @@ const seedLeaderboard = async () => {
                     answers: [],
                     submittedAt: new Date() // Today
                 });
+                resultsAdded++;
             }
-            console.log(`Added results for ${u.name}`);
+            console.log(`✅ Added ${resultsAdded} results for ${u.name}`);
         }
 
         console.log('✅ Leaderboard seeded successfully!');
